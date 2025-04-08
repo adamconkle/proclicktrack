@@ -1,119 +1,101 @@
 body {
-  background-color: #1e1e1e;
-  color: #ffffff;
+  margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 20px;
-}
-
-.container {
-  max-width: 500px;
-  margin: auto;
-}
-
-.controls {
-  margin-bottom: 20px;
-}
-
-.controls label {
-  display: block;
-  margin: 10px 0;
-}
-
-input, select {
-  padding: 5px;
-  font-size: 1rem;
-  background: #2e2e2e;
+  background-color: #121212;
   color: white;
-  border: 1px solid #444;
-  border-radius: 4px;
-}
-
-.buttons {
-  margin: 20px 0;
-}
-
-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  margin: 5px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s ease-in-out;
-}
-
-.toggle-button.start {
-  background-color: #4caf50;
-  color: white;
-}
-
-.toggle-button.stop {
-  background-color: #f44336;
-  color: white;
-}
-
-#visualizer {
+  height: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.beat-box {
-  width: 20px;
-  height: 20px;
-  margin: 4px;
-  border-radius: 4px;
-  background-color: #4444ff;
-  opacity: 0.6;
-  transition: transform 0.1s, opacity 0.1s;
+header {
+  background-color: #000;
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
 }
 
-.song-list {
-  margin-bottom: 30px;
+/* Add a Song button */
+button#showForm {
+  background-color: #000;
+  border: 1px solid yellow;
+  color: yellow;
+  border-radius: 1rem;
+  padding: 1.3rem;
 }
-
-#add-song-btn {
-  padding: 10px;
-  font-size: 1rem;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 4px;
+button#showForm:hover {
+  opacity: .8;
   cursor: pointer;
+  text-decoration:underline;
 }
 
-.modal {
-  display: none;
+/* Modal Form */
+.modal-overlay {
+  display: none; /* Hidden by default */
   position: fixed;
-  z-index: 1;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
-  background-color: #2e2e2e;
-  padding: 20px;
-  margin: 15% auto;
-  width: 80%;
-  border-radius: 8px;
-  color: #fff;
-}
-
-.close-btn {
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
-  position: absolute;
-  right: 10px;
-  top: 5px;
-}
-
-.close-btn:hover,
-.close-btn:focus {
+  background: white;
   color: black;
-  text-decoration: none;
-  cursor: pointer;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  font-size: 16px;
+}
+
+.addSong {
+  list-style-type: none;
+  padding: 0;
+  text-align: center;
+}
+button#addSong {
+  color: green;
+}
+button#cancel {
+  color: red;
+}
+/* end of modal form */
+
+
+#setList {
+  color: #999;
+}
+
+
+/* Volume only */
+footer {
+  background-color: #000;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+#volumeControl {
+  position: relative;
+  padding: 10px;
+}
+
+#vol {
+  display: none; /* Hidden by default */
+  margin-left: 10px;
+  vertical-align: middle;
 }
