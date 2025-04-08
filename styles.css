@@ -9,6 +9,7 @@ body {
   flex-direction: column;
   justify-content: space-around;
   text-align: center;
+  box-sizing: border-box;
 }
 
 header {
@@ -17,7 +18,23 @@ header {
   margin-bottom: 20px;
   width: 100vw;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Add a Song button */
+button#showForm {
+  background-color: #000;
+  border: 1px solid yellow;
+  color: yellow;
+  border-radius: 1rem;
+  padding: 1.3rem;
+}
+button#showForm:hover {
+  opacity: .8;
+  cursor: pointer;
+  text-decoration:underline;
 }
 
 /* Modal Form */
@@ -66,10 +83,10 @@ button#cancel {
 /* Volume only */
 footer {
   background-color: #000;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 20px;
   margin-top: 20px;
   width: 100vw;
+  box-sizing: border-box;
 }
 
 #volumeControl {
