@@ -20,6 +20,35 @@ let lastTapTime = 0;
 let tapIntervals = [];
 let beatIndicators = [];
 
+// Modal for Add Song
+const modal = document.getElementById('song-modal');
+const addSongBtn = document.getElementById('add-song-btn');
+const closeBtn = document.querySelector('.close-btn');
+const songForm = document.getElementById('song-form');
+
+addSongBtn.addEventListener('click', () => {
+  modal.style.display = 'block';
+});
+
+closeBtn.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+window.addEventListener('click', (event) => {
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
+songForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const songName = document.getElementById('song-name').value;
+  console.log(`Song added: ${songName}`);
+  modal.style.display = 'none';
+  songForm.reset();
+});
+
+// Click Sound Functionality
 function playClick() {
   const isAccent = beatIndex === 0 && subBeatIndex === 0;
   const isSubBeat = subdivision > 1 && subBeatIndex !== 0;
