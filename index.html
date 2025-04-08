@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,46 +7,28 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-  <h1>🎧 Pro Click Track</h1>
-  <button id="showForm">Add a Song</button>
-  </header>
+  <div class="container">
+    <h1>Pro Click Track</h1>
 
-  
-  <div id="setList"></div>
-
-  
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-content">
-      <form class="addSong" id="songForm">
-        <input type="text" id="songTitle" placeholder="Enter Song Title"><br>
-        <input type="number" id="bpm" min="1" max="400" value="120"> BPM<br>
-        <select id="timeSignature">
-          <option>4/4</option>
-          <option>3/4</option>
-          <option>6/8</option>
-          <option>7/8</option>
-        </select> Time Signature<br>
+    <div class="controls">
+      <label>BPM: <input type="number" id="bpm" value="100" min="20" max="300"/></label>
+      <label>Beats per Measure: <input type="number" id="beats-per-measure" value="4" min="1" max="16"/></label>
+      <label>Subdivision:
         <select id="subdivision">
-          <option>Quarter Notes</option>
-          <option>Eighth Notes</option>
-          <option>Sixteenth Notes</option>
-        </select> Subdivision<br><br>
-        <button type="button" id="addSong">Add Song</button>
-        <button type="button" id="cancel">Cancel</button>
-      </form>
+          <option value="1">Quarter Notes</option>
+          <option value="2">8th Notes</option>
+          <option value="4">16th Notes</option>
+        </select>
+      </label>
     </div>
+
+    <div class="buttons">
+      <button id="start-stop-button" class="toggle-button start">Start</button>
+      <button id="tap-tempo-button">Tap Tempo</button>
+    </div>
+
+    <div id="visualizer"></div>
   </div>
-
-
-  <footer>
-    <div id="volumeControl">
-      <span id="volumeIcon" style="cursor: pointer; font-size: 1.5em;">🔊</span>
-      <input type="range" id="vol" name="vol" min="0" max="100" value="50">
-    </div>
-  </footer>
-
-
 
   <script src="script.js"></script>
 </body>
