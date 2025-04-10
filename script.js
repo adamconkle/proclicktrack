@@ -1,29 +1,40 @@
-let songs = [];
-let currentInterval = null;
-let isPlaying = false;
+// ========== AUDIO SETUP ==========
+const accentAudio = new Audio('sounds/accent.wav');
+const beatAudio = new Audio('sounds/beat.wav');
 
+// ========== SONG DATA ==========
+let songs = JSON.parse(localStorage.getItem('songs')) || [];
 const selector = document.getElementById('songSelector');
-const playButton = document.getElementById('togglePlay');
-const beatBoxes = document.getElementById('beatBoxes');
-const clickAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEA...'); // Add full base64
+const setList = document.getElementById('setList');
 
-// Load songs from localStorage
-window.addEventListener('DOMContentLoaded', () => {
-  const stored = localStorage.getItem('proClickSongs');
-  if (stored) {
-    songs = JSON.parse(stored);
-    songs.forEach((song, index) => {
-      addSongToUI(song, index);
-    });
-  }
-});
+// Populate dropdown and setlist from localStorage
+function populateSongs() {
+  selector.innerHTML = '<option value="">Select a song</option>';
+  setList.innerHTML = '';
+  songs.forEach((song, index) => {
+    const option = document.createElement('option');
+    option.textContent = song.title;
+    option.value = index;
+    selector.appendChild(option);
 
-// Show modal
+    const songDiv = document.createElement('div');
+    songDiv.innerHTML = `<strong>${song.title}</strong> - ${song.bpm} BPM - ${song.timeSig} - ${song.subdivision}`;
+    songDiv.style.padding = "10px";
+    songDiv.style.borderBottom = "1px solid #ccc";
+    setList.appendChild(songDiv);
+  });
+}
+populateSongs();
+
+// ========== MODAL ==========
 document.getElementById('showForm').addEventListener('click', () => {
   document.getElementById('modalOverlay').style.display = 'flex';
 });
 
-// Add song + update localStorage
+document.getElementById('cancel').addEventListener('click', () => {
+  document.getElementById('modalOverlay').style.display = 'none';
+});
+
 document.getElementById('addSong').addEventListener('click', () => {
   const title = document.getElementById('songTitle').value;
   const bpm = parseInt(document.getElementById('bpm').value);
@@ -37,42 +48,26 @@ document.getElementById('addSong').addEventListener('click', () => {
 
   const song = { title, bpm, timeSig, subdivision };
   songs.push(song);
-  localStorage.setItem('proClickSongs', JSON.stringify(songs));
-
-  addSongToUI(song, songs.length - 1);
+  localStorage.setItem('songs', JSON.stringify(songs));
 
   document.getElementById('songForm').reset();
   document.getElementById('modalOverlay').style.display = 'none';
+  populateSongs();
 });
 
-// Cancel modal
-document.getElementById('cancel').addEventListener('click', () => {
-  document.getElementById('modalOverlay').style.display = 'none';
-});
+// ========== PLAYBACK ==========
+let currentInterval = null;
+let isPlaying = false;
+const playButton = document.getElementById('togglePlay');
+const beatBoxes = document.getElementById('beatBoxes');
 
-// Volume Control
-const volumeIcon = document.getElementById('volumeIcon');
-const volumeSlider = document.getElementById('vol');
-
-volumeIcon.addEventListener('click', () => {
-  volumeSlider.style.display = volumeSlider.style.display === 'none' ? 'inline-block' : 'none';
-});
-
-volumeSlider.addEventListener('input', () => {
-  const vol = parseInt(volumeSlider.value);
-  clickAudio.volume = vol / 100;
-  volumeIcon.textContent = vol === 0 ? '🔇' : vol <= 50 ? '🔈' : '🔊';
-});
-
-// Play/Pause toggle
 playButton.addEventListener('click', () => {
-  const selectedIndex = selector.value;
-  if (selectedIndex === "" || isNaN(selectedIndex)) {
-    alert("Select a song first!");
-    return;
-  }
-
   if (!isPlaying) {
+    const selectedIndex = selector.value;
+    if (selectedIndex === "" || isNaN(selectedIndex)) {
+      alert("Select a song first!");
+      return;
+    }
     const song = songs[selectedIndex];
     startMetronome(song);
     playButton.textContent = '⏸️ Pause';
@@ -82,22 +77,6 @@ playButton.addEventListener('click', () => {
   }
   isPlaying = !isPlaying;
 });
-
-// --- Helper Functions ---
-function addSongToUI(song, index) {
-  // Dropdown
-  const option = document.createElement('option');
-  option.textContent = song.title;
-  option.value = index;
-  selector.appendChild(option);
-
-  // Visual list
-  const songDiv = document.createElement('div');
-  songDiv.innerHTML = `<strong>${song.title}</strong> - ${song.bpm} BPM - ${song.timeSig} - ${song.subdivision}`;
-  songDiv.style.padding = "10px";
-  songDiv.style.borderBottom = "1px solid #ccc";
-  document.getElementById('setList').appendChild(songDiv);
-}
 
 function startMetronome(song) {
   const beatsPerMeasure = parseInt(song.timeSig.split('/')[0]);
@@ -109,8 +88,11 @@ function startMetronome(song) {
   drawBeatBoxes(totalBeats, beatsPerMeasure);
 
   currentInterval = setInterval(() => {
-    clickAudio.currentTime = 0;
-    clickAudio.play();
+    const isAccent = beatCount % beatsPerMeasure === 0;
+    const audio = isAccent ? accentAudio : beatAudio;
+    audio.currentTime = 0;
+    audio.play();
+
     updateVisualBeat(beatCount, beatsPerMeasure);
     beatCount = (beatCount + 1) % totalBeats;
   }, interval);
@@ -153,39 +135,47 @@ function updateVisualBeat(beatIndex, beatsPerMeasure) {
   }
 }
 
+// ========== VOLUME CONTROL ==========
+const volumeIcon = document.getElementById('volumeIcon');
+const volumeSlider = document.getElementById('vol');
 
-// import/export
-// Export songs to a .json file
+volumeIcon.addEventListener('click', () => {
+  volumeSlider.style.display = (volumeSlider.style.display === 'none' || volumeSlider.style.display === '') ? 'inline-block' : 'none';
+});
+
+volumeSlider.addEventListener('input', () => {
+  const vol = parseInt(volumeSlider.value);
+  accentAudio.volume = vol / 100;
+  beatAudio.volume = vol / 100;
+
+  if (vol === 0) volumeIcon.textContent = '🔇';
+  else if (vol <= 50) volumeIcon.textContent = '🔈';
+  else volumeIcon.textContent = '🔊';
+});
+
+// ========== EXPORT / IMPORT ==========
 document.getElementById('exportSongs').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(songs, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(songs)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'pro-click-songs.json';
-  a.click();
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'songs.json';
+  link.click();
   URL.revokeObjectURL(url);
 });
 
-// Import songs from a .json file
-document.getElementById('importSongs').addEventListener('change', async (e) => {
+document.getElementById('importSongs').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-
-  const text = await file.text();
-  try {
-    const importedSongs = JSON.parse(text);
-    if (!Array.isArray(importedSongs)) throw new Error('Invalid format');
-
-    songs = importedSongs;
-    localStorage.setItem('proClickSongs', JSON.stringify(songs));
-
-    // Clear and repopulate UI
-    selector.innerHTML = '<option value="">Select a song</option>';
-    document.getElementById('setList').innerHTML = '';
-    songs.forEach((song, index) => addSongToUI(song, index));
-    alert("Songs imported successfully!");
-  } catch (err) {
-    alert("Invalid file. Make sure it’s a valid Pro Click Track export.");
-  }
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    try {
+      songs = JSON.parse(event.target.result);
+      localStorage.setItem('songs', JSON.stringify(songs));
+      populateSongs();
+    } catch (err) {
+      alert("Invalid file format.");
+    }
+  };
+  reader.readAsText(file);
 });
-
