@@ -80,10 +80,11 @@ document.getElementById('addSong').addEventListener('click', () => {
   const song = { title, bpm, timeSig, subdivision };
   songs.push(song);
 
+  // ✅ NEW: Add to dropdown
   const option = document.createElement('option');
-  option.text = title;
+  option.textContent = `${title}`;
   option.value = songs.length - 1;
-  selector.add(option);
+  document.getElementById('songSelector').appendChild(option);
 
   const songDiv = document.createElement('div');
   songDiv.innerHTML = `<strong>${title}</strong> - ${bpm} BPM - ${timeSig} - ${subdivision}`;
