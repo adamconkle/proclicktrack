@@ -1,43 +1,29 @@
+let songs = [];
+let currentInterval = null;
+let isPlaying = false;
+
+const selector = document.getElementById('songSelector');
+const playButton = document.getElementById('togglePlay');
+const beatBoxes = document.getElementById('beatBoxes');
+const clickAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEA...'); // Add full base64
+
+// Load songs from localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  const stored = localStorage.getItem('proClickSongs');
+  if (stored) {
+    songs = JSON.parse(stored);
+    songs.forEach((song, index) => {
+      addSongToUI(song, index);
+    });
+  }
+});
+
 // Show modal
 document.getElementById('showForm').addEventListener('click', () => {
   document.getElementById('modalOverlay').style.display = 'flex';
 });
 
-// Cancel button just closes modal
-document.getElementById('cancel').addEventListener('click', () => {
-  document.getElementById('modalOverlay').style.display = 'none';
-});
-
-// Volume Control
-const volumeIcon = document.getElementById('volumeIcon');
-const volumeSlider = document.getElementById('vol');
-
-volumeIcon.addEventListener('click', () => {
-  volumeSlider.style.display =
-    volumeSlider.style.display === 'none' || volumeSlider.style.display === ''
-      ? 'inline-block'
-      : 'none';
-});
-
-volumeSlider.addEventListener('input', () => {
-  const vol = parseInt(volumeSlider.value);
-  if (vol === 0) volumeIcon.textContent = '🔇';
-  else if (vol <= 50) volumeIcon.textContent = '🔈';
-  else volumeIcon.textContent = '🔊';
-});
-
-// Main click track logic
-let songs = [];
-let currentInterval = null;
-let isPlaying = false;
-const selector = document.getElementById('songSelector');
-const playButton = document.getElementById('togglePlay');
-const beatBoxes = document.getElementById('beatBoxes');
-
-// Replace with real short click sound if needed
-const clickAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEA...');
-
-// Add song and update dropdown + UI
+// Add song + update localStorage
 document.getElementById('addSong').addEventListener('click', () => {
   const title = document.getElementById('songTitle').value;
   const bpm = parseInt(document.getElementById('bpm').value);
@@ -51,34 +37,42 @@ document.getElementById('addSong').addEventListener('click', () => {
 
   const song = { title, bpm, timeSig, subdivision };
   songs.push(song);
+  localStorage.setItem('proClickSongs', JSON.stringify(songs));
 
-  // Add to dropdown
-  const option = document.createElement('option');
-  option.textContent = `${title}`;
-  option.value = songs.length - 1;
-  selector.appendChild(option);
+  addSongToUI(song, songs.length - 1);
 
-  // Add to set list visually
-  const songDiv = document.createElement('div');
-  songDiv.innerHTML = `<strong>${title}</strong> - ${bpm} BPM - ${timeSig} - ${subdivision}`;
-  songDiv.style.padding = "10px";
-  songDiv.style.borderBottom = "1px solid #ccc";
-  document.getElementById('setList').appendChild(songDiv);
-
-  // Reset and close modal
   document.getElementById('songForm').reset();
   document.getElementById('modalOverlay').style.display = 'none';
 });
 
+// Cancel modal
+document.getElementById('cancel').addEventListener('click', () => {
+  document.getElementById('modalOverlay').style.display = 'none';
+});
+
+// Volume Control
+const volumeIcon = document.getElementById('volumeIcon');
+const volumeSlider = document.getElementById('vol');
+
+volumeIcon.addEventListener('click', () => {
+  volumeSlider.style.display = volumeSlider.style.display === 'none' ? 'inline-block' : 'none';
+});
+
+volumeSlider.addEventListener('input', () => {
+  const vol = parseInt(volumeSlider.value);
+  clickAudio.volume = vol / 100;
+  volumeIcon.textContent = vol === 0 ? '🔇' : vol <= 50 ? '🔈' : '🔊';
+});
+
 // Play/Pause toggle
 playButton.addEventListener('click', () => {
-  if (!isPlaying) {
-    const selectedIndex = selector.value;
-    if (selectedIndex === "" || isNaN(selectedIndex)) {
-      alert("Select a song first!");
-      return;
-    }
+  const selectedIndex = selector.value;
+  if (selectedIndex === "" || isNaN(selectedIndex)) {
+    alert("Select a song first!");
+    return;
+  }
 
+  if (!isPlaying) {
     const song = songs[selectedIndex];
     startMetronome(song);
     playButton.textContent = '⏸️ Pause';
@@ -89,12 +83,27 @@ playButton.addEventListener('click', () => {
   isPlaying = !isPlaying;
 });
 
-// Start metronome loop
+// --- Helper Functions ---
+function addSongToUI(song, index) {
+  // Dropdown
+  const option = document.createElement('option');
+  option.textContent = song.title;
+  option.value = index;
+  selector.appendChild(option);
+
+  // Visual list
+  const songDiv = document.createElement('div');
+  songDiv.innerHTML = `<strong>${song.title}</strong> - ${song.bpm} BPM - ${song.timeSig} - ${song.subdivision}`;
+  songDiv.style.padding = "10px";
+  songDiv.style.borderBottom = "1px solid #ccc";
+  document.getElementById('setList').appendChild(songDiv);
+}
+
 function startMetronome(song) {
   const beatsPerMeasure = parseInt(song.timeSig.split('/')[0]);
   const subDiv = getSubdivisionFactor(song.subdivision);
   const totalBeats = beatsPerMeasure * subDiv;
-  const interval = 60000 / (song.bpm * subDiv); // ms per tick
+  const interval = 60000 / (song.bpm * subDiv);
 
   let beatCount = 0;
   drawBeatBoxes(totalBeats, beatsPerMeasure);
@@ -107,13 +116,11 @@ function startMetronome(song) {
   }, interval);
 }
 
-// Stop metronome
 function stopMetronome() {
   clearInterval(currentInterval);
   beatBoxes.innerHTML = '';
 }
 
-// Subdivision mapping
 function getSubdivisionFactor(subdivision) {
   switch (subdivision) {
     case "Quarter Notes": return 1;
@@ -123,7 +130,6 @@ function getSubdivisionFactor(subdivision) {
   }
 }
 
-// Create beat visual boxes
 function drawBeatBoxes(count, beatsPerMeasure) {
   beatBoxes.innerHTML = '';
   for (let i = 0; i < count; i++) {
@@ -140,7 +146,6 @@ function drawBeatBoxes(count, beatsPerMeasure) {
   }
 }
 
-// Update beat highlight
 function updateVisualBeat(beatIndex, beatsPerMeasure) {
   const children = beatBoxes.children;
   for (let i = 0; i < children.length; i++) {
