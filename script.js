@@ -1,6 +1,6 @@
 // ========== AUDIO SETUP ==========
-const accentAudio = new Audio('sounds/accent.wav');
-const beatAudio = new Audio('sounds/beat.wav');
+const accentAudio = new Audio('sounds/metronome-85688.mp3');
+const beatAudio = new Audio('sounds/rimshot-sweet-107111.mp3');
 
 // ========== SONG DATA ==========
 let songs = JSON.parse(localStorage.getItem('songs')) || [];
