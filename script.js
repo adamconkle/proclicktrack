@@ -3,50 +3,22 @@ document.getElementById('showForm').addEventListener('click', () => {
   document.getElementById('modalOverlay').style.display = 'flex';
 });
 
-// Add song and close modal
-document.getElementById('addSong').addEventListener('click', () => {
-  const title = document.getElementById('songTitle').value;
-  const bpm = document.getElementById('bpm').value;
-  const timeSig = document.getElementById('timeSignature').value;
-  const subdivision = document.getElementById('subdivision').value;
-
-  if (title.trim() === "") {
-    alert("Please enter a song title.");
-    return;
-  }
-
-  const songDiv = document.createElement('div');
-  songDiv.innerHTML = `<strong>${title}</strong> - ${bpm} BPM - ${timeSig} - ${subdivision}`;
-  songDiv.style.padding = "10px";
-  songDiv.style.borderBottom = "1px solid #ccc";
-  document.getElementById('setList').appendChild(songDiv);
-
-  // Reset form and close
-  document.getElementById('songForm').reset();
-  document.getElementById('modalOverlay').style.display = 'none';
-});
-
 // Cancel button just closes modal
 document.getElementById('cancel').addEventListener('click', () => {
   document.getElementById('modalOverlay').style.display = 'none';
 });
-
-
 
 // Volume Control
 const volumeIcon = document.getElementById('volumeIcon');
 const volumeSlider = document.getElementById('vol');
 
 volumeIcon.addEventListener('click', () => {
-  // Toggle visibility
-  if (volumeSlider.style.display === 'none' || volumeSlider.style.display === '') {
-    volumeSlider.style.display = 'inline-block';
-  } else {
-    volumeSlider.style.display = 'none';
-  }
+  volumeSlider.style.display =
+    volumeSlider.style.display === 'none' || volumeSlider.style.display === ''
+      ? 'inline-block'
+      : 'none';
 });
 
-// Icon change depending on the volume level
 volumeSlider.addEventListener('input', () => {
   const vol = parseInt(volumeSlider.value);
   if (vol === 0) volumeIcon.textContent = '🔇';
@@ -54,18 +26,18 @@ volumeSlider.addEventListener('input', () => {
   else volumeIcon.textContent = '🔊';
 });
 
-
-
-// testing code remove if not working play/pause
+// Main click track logic
 let songs = [];
 let currentInterval = null;
 let isPlaying = false;
 const selector = document.getElementById('songSelector');
 const playButton = document.getElementById('togglePlay');
 const beatBoxes = document.getElementById('beatBoxes');
-const clickAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEA...'); // Replace with real short click sound
 
-// Add song to selector and list
+// Replace with real short click sound if needed
+const clickAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEA...');
+
+// Add song and update dropdown + UI
 document.getElementById('addSong').addEventListener('click', () => {
   const title = document.getElementById('songTitle').value;
   const bpm = parseInt(document.getElementById('bpm').value);
@@ -80,23 +52,25 @@ document.getElementById('addSong').addEventListener('click', () => {
   const song = { title, bpm, timeSig, subdivision };
   songs.push(song);
 
-  // ✅ NEW: Add to dropdown
+  // Add to dropdown
   const option = document.createElement('option');
   option.textContent = `${title}`;
   option.value = songs.length - 1;
-  document.getElementById('songSelector').appendChild(option);
+  selector.appendChild(option);
 
+  // Add to set list visually
   const songDiv = document.createElement('div');
   songDiv.innerHTML = `<strong>${title}</strong> - ${bpm} BPM - ${timeSig} - ${subdivision}`;
   songDiv.style.padding = "10px";
   songDiv.style.borderBottom = "1px solid #ccc";
   document.getElementById('setList').appendChild(songDiv);
 
+  // Reset and close modal
   document.getElementById('songForm').reset();
   document.getElementById('modalOverlay').style.display = 'none';
 });
 
-// Play/Pause logic
+// Play/Pause toggle
 playButton.addEventListener('click', () => {
   if (!isPlaying) {
     const selectedIndex = selector.value;
@@ -115,7 +89,7 @@ playButton.addEventListener('click', () => {
   isPlaying = !isPlaying;
 });
 
-// Start metronome
+// Start metronome loop
 function startMetronome(song) {
   const beatsPerMeasure = parseInt(song.timeSig.split('/')[0]);
   const subDiv = getSubdivisionFactor(song.subdivision);
@@ -133,11 +107,13 @@ function startMetronome(song) {
   }, interval);
 }
 
+// Stop metronome
 function stopMetronome() {
   clearInterval(currentInterval);
   beatBoxes.innerHTML = '';
 }
 
+// Subdivision mapping
 function getSubdivisionFactor(subdivision) {
   switch (subdivision) {
     case "Quarter Notes": return 1;
@@ -147,7 +123,7 @@ function getSubdivisionFactor(subdivision) {
   }
 }
 
-// Create beat boxes
+// Create beat visual boxes
 function drawBeatBoxes(count, beatsPerMeasure) {
   beatBoxes.innerHTML = '';
   for (let i = 0; i < count; i++) {
@@ -164,11 +140,10 @@ function drawBeatBoxes(count, beatsPerMeasure) {
   }
 }
 
-// Highlight current beat
+// Update beat highlight
 function updateVisualBeat(beatIndex, beatsPerMeasure) {
   const children = beatBoxes.children;
   for (let i = 0; i < children.length; i++) {
     children[i].style.opacity = i === beatIndex ? '1' : '0.3';
   }
 }
-
