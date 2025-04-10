@@ -152,3 +152,40 @@ function updateVisualBeat(beatIndex, beatsPerMeasure) {
     children[i].style.opacity = i === beatIndex ? '1' : '0.3';
   }
 }
+
+
+// import/export
+// Export songs to a .json file
+document.getElementById('exportSongs').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(songs, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pro-click-songs.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// Import songs from a .json file
+document.getElementById('importSongs').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const text = await file.text();
+  try {
+    const importedSongs = JSON.parse(text);
+    if (!Array.isArray(importedSongs)) throw new Error('Invalid format');
+
+    songs = importedSongs;
+    localStorage.setItem('proClickSongs', JSON.stringify(songs));
+
+    // Clear and repopulate UI
+    selector.innerHTML = '<option value="">Select a song</option>';
+    document.getElementById('setList').innerHTML = '';
+    songs.forEach((song, index) => addSongToUI(song, index));
+    alert("Songs imported successfully!");
+  } catch (err) {
+    alert("Invalid file. Make sure it’s a valid Pro Click Track export.");
+  }
+});
+
