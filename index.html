@@ -15,7 +15,7 @@
   
   <div id="setList"></div>
 
-<!-- remove if doesn't work -->
+<!-- dropdown -->
 <div>
   <h2>🎵 Select a Song</h2>
   <select id="songSelector">
@@ -25,6 +25,11 @@
 </div>
 
 <div id="beatBoxes" style="margin-top: 20px;"></div>
+
+  <!-- import/export -->
+  <button id="exportSongs">⬇️ Export Songs</button>
+  <input type="file" id="importSongs" accept=".json" style="display:none;">
+  <label for="importSongs" style="cursor:pointer;">⬆️ Import Songs</label>
 
   
   <div class="modal-overlay" id="modalOverlay">
