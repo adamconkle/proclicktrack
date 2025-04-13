@@ -27,11 +27,11 @@
 <div id="beatBoxes" style="margin-top: 20px;"></div>
 
   <!-- import/export -->
-  <button id="exportSongs">⬇️ Export Songs</button>
-  <input type="file" id="importSongs" accept=".json" style="display:none;">
+  <button class="io" id="exportSongs" style="cursor:pointer;">⬇️ Export Songs</button>
+  <input class="io" type="file" id="importSongs" accept=".json" style="display:none;">
   <label for="importSongs" style="cursor:pointer;">⬆️ Import Songs</label>
 
-  
+  <!-- modal for new song info -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
       <form class="addSong" id="songForm">
