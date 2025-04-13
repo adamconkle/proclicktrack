@@ -79,6 +79,14 @@ button#cancel {
   color: #999;
 }
 
+/* import/export buttons */
+.io {
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  width: 100px;
+}
 
 /* Volume only */
 footer {
