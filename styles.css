@@ -71,10 +71,16 @@ button#showForm:hover {
 button#addSong {
   color: white;
   background-color: limegreen;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
 }
 button#cancel {
   color: white;
   background-color: red;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
 }
 /* end of modal form */
 
