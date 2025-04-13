@@ -95,6 +95,19 @@ button.io {
   width: 150px;
 }
 
+label.io {
+  display: inline-block; /* Needed for padding and width to work */
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+  color: white;
+  background-color: #121212;
+  width: 150px;
+  text-align: center;
+}
+
+
 /* Volume only */
 footer {
   background-color: #000;
