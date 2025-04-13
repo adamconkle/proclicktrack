@@ -84,7 +84,8 @@ button#cancel {
 }
 
 /* import/export buttons */
-button.io {
+button.io, label.io {
+  display: inline-block;
   border: 1px solid white;
   border-radius: 10px;
   padding: 10px;
@@ -92,19 +93,11 @@ button.io {
   color: white;
   background-color: #121212;
   width: 150px;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
 }
 
-label.io {
-  display: inline-block; /* Needed for padding and width to work */
-  border: 1px solid white;
-  border-radius: 10px;
-  padding: 10px;
-  margin: 10px;
-  color: white;
-  background-color: #121212;
-  width: 150px;
-  text-align: center;
-}
 
 
 /* Volume only */
