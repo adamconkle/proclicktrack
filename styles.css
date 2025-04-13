@@ -34,7 +34,7 @@ button#showForm {
   font-size: 1.1rem;
   border: none;
   border-radius: 1rem;
-  padding: 1.3rem;
+  padding: 10px;
 }
 button#showForm:hover {
   opacity: .8;
