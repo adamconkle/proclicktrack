@@ -30,6 +30,7 @@ header {
 button#showForm {
   background-color: yellow;
   color: black;
+  border: none;
   border-radius: 1rem;
   padding: 1.3rem;
 }
