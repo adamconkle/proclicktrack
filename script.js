@@ -1,13 +1,36 @@
 // ========== AUDIO SETUP ==========
-const accentAudio = new Audio('sounds/metronome-85688.mp3');
-const beatAudio = new Audio('sounds/rimshot-sweet-107111.mp3');
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let accentBuffer = null;
+let beatBuffer = null;
+
+let nextNoteTime = 0.0;
+let schedulerTimer;
+let currentBeat = 0;
+let totalBeats = 0;
+let beatsPerMeasure = 4;
+let subDiv = 1;
+let songData;
+
+// Preload and decode sounds
+async function loadSounds() {
+  const loadSound = async (url) => {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    return audioContext.decodeAudioData(arrayBuffer);
+  };
+
+  [accentBuffer, beatBuffer] = await Promise.all([
+    loadSound('sounds/metronome-85688.mp3'),
+    loadSound('sounds/rimshot-sweet-107111.mp3')
+  ]);
+}
+loadSounds();
 
 // ========== SONG DATA ==========
 let songs = JSON.parse(localStorage.getItem('songs')) || [];
 const selector = document.getElementById('songSelector');
 const setList = document.getElementById('setList');
 
-// Populate dropdown and setlist from localStorage
 function populateSongs() {
   selector.innerHTML = '<option value="">Select a song</option>';
   setList.innerHTML = '';
@@ -56,7 +79,6 @@ document.getElementById('addSong').addEventListener('click', () => {
 });
 
 // ========== PLAYBACK ==========
-let currentInterval = null;
 let isPlaying = false;
 const playButton = document.getElementById('togglePlay');
 const beatBoxes = document.getElementById('beatBoxes');
@@ -68,8 +90,9 @@ playButton.addEventListener('click', () => {
       alert("Select a song first!");
       return;
     }
-    const song = songs[selectedIndex];
-    startMetronome(song);
+
+    songData = songs[selectedIndex];
+    startMetronome(songData);
     playButton.textContent = '⏸️ Pause';
   } else {
     stopMetronome();
@@ -79,30 +102,54 @@ playButton.addEventListener('click', () => {
 });
 
 function startMetronome(song) {
-  const beatsPerMeasure = parseInt(song.timeSig.split('/')[0]);
-  const subDiv = getSubdivisionFactor(song.subdivision);
-  const totalBeats = beatsPerMeasure * subDiv;
-  const interval = 60000 / (song.bpm * subDiv);
+  audioContext.resume(); // Needed for autoplay restrictions
 
-  let beatCount = 0;
+  beatsPerMeasure = parseInt(song.timeSig.split('/')[0]);
+  subDiv = getSubdivisionFactor(song.subdivision);
+  totalBeats = beatsPerMeasure * subDiv;
+
+  const bpm = song.bpm;
+  const beatInterval = 60 / (bpm * subDiv);
+  nextNoteTime = audioContext.currentTime + 0.1;
+  currentBeat = 0;
+
   drawBeatBoxes(totalBeats, beatsPerMeasure);
-
-  currentInterval = setInterval(() => {
-    const isAccent = beatCount % beatsPerMeasure === 0;
-    const audio = isAccent ? accentAudio : beatAudio;
-    audio.currentTime = 0;
-    audio.play();
-
-    updateVisualBeat(beatCount, beatsPerMeasure);
-    beatCount = (beatCount + 1) % totalBeats;
-  }, interval);
+  schedulerTimer = setInterval(() => scheduler(beatInterval), 25);
 }
 
 function stopMetronome() {
-  clearInterval(currentInterval);
+  clearInterval(schedulerTimer);
   beatBoxes.innerHTML = '';
 }
 
+function scheduler(beatInterval) {
+  while (nextNoteTime < audioContext.currentTime + 0.1) {
+    playClick(currentBeat, nextNoteTime);
+    updateVisualBeat(currentBeat, beatsPerMeasure);
+
+    currentBeat = (currentBeat + 1) % totalBeats;
+    nextNoteTime += beatInterval;
+  }
+}
+
+function playClick(beatIndex, time) {
+  const isAccent = beatIndex % beatsPerMeasure === 0;
+  const buffer = isAccent ? accentBuffer : beatBuffer;
+
+  if (!buffer) return;
+
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
+
+  const gainNode = audioContext.createGain();
+  const volume = parseInt(volumeSlider.value) / 100;
+  gainNode.gain.value = volume;
+
+  source.connect(gainNode).connect(audioContext.destination);
+  source.start(time);
+}
+
+// ========== HELPER FUNCTIONS ==========
 function getSubdivisionFactor(subdivision) {
   switch (subdivision) {
     case "Quarter Notes": return 1;
@@ -145,9 +192,6 @@ volumeIcon.addEventListener('click', () => {
 
 volumeSlider.addEventListener('input', () => {
   const vol = parseInt(volumeSlider.value);
-  accentAudio.volume = vol / 100;
-  beatAudio.volume = vol / 100;
-
   if (vol === 0) volumeIcon.textContent = '🔇';
   else if (vol <= 50) volumeIcon.textContent = '🔈';
   else volumeIcon.textContent = '🔊';
