@@ -28,9 +28,8 @@ header {
 
 /* Add a Song button */
 button#showForm {
-  background-color: #000;
-  border: 1px solid yellow;
-  color: yellow;
+  background-color: yellow;
+  color: black;
   border-radius: 1rem;
   padding: 1.3rem;
 }
