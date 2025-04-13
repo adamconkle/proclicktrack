@@ -30,6 +30,7 @@ header {
 button#showForm {
   background-color: yellow;
   color: black;
+  font-weight: bold;
   border: none;
   border-radius: 1rem;
   padding: 1.3rem;
@@ -37,7 +38,14 @@ button#showForm {
 button#showForm:hover {
   opacity: .8;
   cursor: pointer;
-  text-decoration:underline;
+}
+
+/* setlist drop down and play */
+#songSelector, #togglePlay {
+  padding: 5px; 
+  border: none;
+  color: white;
+  background-color: #121212;
 }
 
 /* Modal Form */
