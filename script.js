@@ -223,3 +223,14 @@ document.getElementById('importSongs').addEventListener('change', (e) => {
   };
   reader.readAsText(file);
 });
+
+// clear setlist
+document.getElementById("clearSetlist").addEventListener("click", () => {
+  if (confirm("Are you sure you want to clear the entire setlist?")) {
+    localStorage.removeItem("songs");
+    document.getElementById("setList").innerHTML = "";
+    document.getElementById("songSelector").innerHTML = `<option disabled selected>Select a song</option>`;
+    alert("Setlist cleared!");
+  }
+});
+
