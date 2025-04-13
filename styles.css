@@ -70,10 +70,12 @@ button#showForm:hover {
   text-align: center;
 }
 button#addSong {
-  color: green;
+  color: white;
+  background-color: limegreen;
 }
 button#cancel {
-  color: red;
+  color: white;
+  background-color: red;
 }
 /* end of modal form */
 
