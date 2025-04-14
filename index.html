@@ -21,17 +21,17 @@
   <select id="songSelector">
     <option disabled selected>Select a song</option>
   </select>
-  <button id="togglePlay">▶️ Play</button>
+  <button id="togglePlay">▶ Play</button>
 </div>
 
 <div id="beatBoxes" style="margin-top: 20px;"></div>
 
   <!-- import/export -->
   <div>
-    <button class="io" id="exportSongs" style="cursor:pointer;">⬇️ Export Songs</button>
+    <button class="io" id="exportSongs" style="cursor:pointer;">&#10515; Export Songs</button>
     <input type="file" class="io" id="importSongs" accept=".json" style="display:none;">
-    <label for="importSongs" class="io" style="cursor:pointer;">⬆️ Import Songs</label>
-    <button class="io" id="clearSetlist" style="cursor:pointer;">🗑️ Clear Setlist</button>
+    <label for="importSongs" class="io" style="cursor:pointer;">&#10514; Import Songs</label>
+    <button class="io" id="clearSetlist" style="cursor:pointer;">&#9746; Clear Setlist</button>
   </div>
 
   <!-- modal for new song info -->
@@ -63,6 +63,7 @@
       <span id="volumeIcon" style="cursor: pointer; font-size: 1.5em;">🔊</span>
       <input type="range" id="vol" name="vol" min="0" max="100" value="50">
     </div>
+    <!-- &#9776; hamburger-->
   </footer>
 
 
